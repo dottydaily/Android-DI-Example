@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "org.workshop.dependencyinjection"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -46,11 +46,15 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
 
     // Dagger
-    implementation 'com.google.dagger:dagger:2.x'
-    kapt 'com.google.dagger:dagger-compiler:2.x'
+    implementation 'com.google.dagger:dagger:2.0'
+    kapt 'com.google.dagger:dagger-compiler:2.0'
 
     // Fragment KTX - lazy init viewModel
     implementation 'androidx.fragment:fragment-ktx:1.2.5'
+
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

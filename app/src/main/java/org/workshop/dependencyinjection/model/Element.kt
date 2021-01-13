@@ -1,6 +1,10 @@
 package org.workshop.dependencyinjection.model
 
-enum class Element { FIRE, WATER, EARTH, WIND, LIGHT, DARK }
+enum class Element(name: String) {
+    FIRE("FIRE"), WATER("WATER"), EARTH("EARTH"),
+    WIND("WIND"), LIGHT("LIGHT"), DARK("DARK")
+}
+
 abstract class ElementHelper {
     companion object {
         fun getElementMultiplier(atkElement: Element, defElement: Element): Double {

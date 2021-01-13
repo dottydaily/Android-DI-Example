@@ -56,10 +56,10 @@
         android:layout_height="80dp"
         android:layout_margin="24dp"
         android:src="@drawable/textbox"
+        android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@id/monster_1_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-
 
     <TextView
         android:id="@+id/game_description_text_view"
@@ -72,5 +72,17 @@
         app:layout_constraintStart_toStartOf="@id/text_box"
         app:layout_constraintEnd_toEndOf="@id/text_box"
         app:layout_constraintBottom_toBottomOf="@id/text_box"/>
+
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/text_box"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

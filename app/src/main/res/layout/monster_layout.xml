@@ -51,4 +51,12 @@
         app:layout_constraintTop_toBottomOf="@id/monster_def_text_view"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/monster_state_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="State: Normal"
+        app:layout_constraintTop_toBottomOf="@id/monster_element_text_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
