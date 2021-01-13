@@ -1,9 +1,12 @@
 package org.workshop.dependencyinjection.model
 
 import android.util.Log
+import org.workshop.dependencyinjection.dagger.EquipmentScope
+import javax.inject.Inject
+import javax.inject.Named
 import kotlin.random.Random
 
-class Monster(
+class Monster @Inject constructor(
     val name: String,
     val baseAtk: Double,
     val baseDef: Double,

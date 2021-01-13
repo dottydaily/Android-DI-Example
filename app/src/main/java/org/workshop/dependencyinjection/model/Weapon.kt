@@ -1,9 +1,12 @@
 package org.workshop.dependencyinjection.model
 
+import org.workshop.dependencyinjection.dagger.EquipmentScope
+import javax.inject.Inject
 import kotlin.random.Random
 
-data class Weapon(val atk: Double, val element: Element) {
-    constructor() : this(
+@EquipmentScope
+data class Weapon (val atk: Double, val element: Element) {
+    @Inject constructor() : this(
         Random.nextDouble(500.0, 1000.0),
         when (Random.nextInt(1, 6)) {
             1 -> Element.FIRE
