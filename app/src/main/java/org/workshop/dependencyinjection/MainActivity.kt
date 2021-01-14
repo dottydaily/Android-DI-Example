@@ -45,11 +45,17 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.currentJobLiveData.observe(this) { job ->
             if (job == null) {
-                binding.textBox.visibility = View.INVISIBLE
-                binding.startButton.text = "Start"
+                binding.apply {
+                    gameDescriptionTextView.visibility = View.INVISIBLE
+                    textBox.visibility = View.INVISIBLE
+                    startButton.text = "Start"
+                }
             } else {
-                binding.textBox.visibility = View.VISIBLE
-                binding.startButton.text = "Stop"
+                binding.apply {
+                    gameDescriptionTextView.visibility = View.VISIBLE
+                    textBox.visibility = View.VISIBLE
+                    startButton.text = "Stop"
+                }
             }
         }
     }

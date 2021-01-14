@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
-import org.workshop.dependencyinjection.model.Armor
 import org.workshop.dependencyinjection.model.Monster
-import org.workshop.dependencyinjection.model.Weapon
 import kotlin.random.Random
 
 class MainViewModel: ViewModel() {
@@ -36,6 +34,8 @@ class MainViewModel: ViewModel() {
     val isPlaying get() = currentJobLiveData.value != null
 
     fun startGame() {
+        clearData()
+
         // Background Thread
         _currentJobLiveData.postValue(
             viewModelScope.launch(Dispatchers.IO) {
@@ -114,13 +114,15 @@ class MainViewModel: ViewModel() {
     }
 
     fun stopGame() {
+        _currentJobLiveData.value?.cancel()
+        _currentJobLiveData.postValue(null)
+    }
+
+    fun clearData() {
         _monster1LiveData.postValue(null)
         _monster2LiveData.postValue(null)
         _gameTurnLiveData.postValue(null)
         _gamePlayerLiveData.postValue(null)
         _gameDescriptionLiveData.postValue(null)
-
-        currentJobLiveData.value?.cancel()
-        _currentJobLiveData.postValue(null)
     }
 }
