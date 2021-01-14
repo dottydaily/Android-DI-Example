@@ -40,14 +40,16 @@ class MainViewModel: ViewModel() {
         _currentJobLiveData.postValue(
             viewModelScope.launch(Dispatchers.IO) {
                 // Create Weapon and Armor for each monsters.
-                val weapon1 = Weapon()
-                val armor1 = Armor()
-                val monster1 = Monster("Pikachu", 200.0, 50.0, 2000.0, weapon1, armor1)
+//                val weapon1 = Weapon()
+//                val armor1 = Armor()
+//                val monster1 = Monster("Pikachu", 200.0, 50.0, 2000.0, weapon1, armor1)
+                val monster1 = Monster("Pikachu", 200.0, 50.0, 2000.0)
                 _monster1LiveData.postValue(monster1)
 
-                val weapon2 = Weapon()
-                val armor2 = Armor()
-                val monster2 = Monster("Lizardon", 100.0, 100.0, 2000.0, weapon2, armor2)
+//                val weapon2 = Weapon()
+//                val armor2 = Armor()
+//                val monster2 = Monster("Lizardon", 100.0, 100.0, 2000.0, weapon2, armor2)
+                val monster2 = Monster("Lizardon", 100.0, 100.0, 2000.0)
                 _monster2LiveData.postValue(monster2)
 
                 var isPlayer1Turn = true

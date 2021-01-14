@@ -1,19 +1,23 @@
 package org.workshop.dependencyinjection.model
 
 import android.util.Log
-import org.workshop.dependencyinjection.dagger.EquipmentScope
+import org.workshop.dependencyinjection.PokemonApplication
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.random.Random
 
-class Monster @Inject constructor(
-    val name: String,
-    val baseAtk: Double,
-    val baseDef: Double,
-    var hp: Double,
-    val weapon: Weapon,
-    val armor: Armor
+class Monster (
+        val name: String,
+        val baseAtk: Double,
+        val baseDef: Double,
+        var hp: Double
 ) {
+    @Inject lateinit var weapon: Weapon
+    @Inject lateinit var armor: Armor
+
+    init {
+        PokemonApplication.appComponent.inject(this)
+    }
+
     val totalAtk get() = baseAtk + weapon.atk
     val totalDef get() = baseDef + armor.def
     val isDead get() = state == MonsterState.DEAD

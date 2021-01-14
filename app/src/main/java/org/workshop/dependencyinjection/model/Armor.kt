@@ -1,10 +1,8 @@
 package org.workshop.dependencyinjection.model
 
-import org.workshop.dependencyinjection.dagger.EquipmentScope
 import javax.inject.Inject
 import kotlin.random.Random
 
-@EquipmentScope
 data class Armor (val def: Double, val element: Element) {
     @Inject constructor() : this(
         Random.nextDouble(1.0, 100.0),

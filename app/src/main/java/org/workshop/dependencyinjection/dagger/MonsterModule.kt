@@ -7,9 +7,9 @@ import org.workshop.dependencyinjection.model.Weapon
 
 @Module
 class MonsterModule {
-    @Provides @EquipmentScope
+    @Provides
     fun provideWeapon(): Weapon = Weapon()
 
-    @Provides @EquipmentScope
+    @Provides
     fun provideArmor(): Armor = Armor()
 }
