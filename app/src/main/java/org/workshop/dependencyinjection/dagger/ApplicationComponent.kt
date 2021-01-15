@@ -13,6 +13,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [MonsterModule::class])
 interface ApplicationComponent {
-    fun inject(monster: Monster)
+    fun inject(mainViewModel: MainViewModel)
     fun inject(pokemonApplication: PokemonApplication)
 }

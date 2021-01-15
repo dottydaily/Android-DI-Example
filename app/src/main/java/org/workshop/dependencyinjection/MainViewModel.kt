@@ -5,7 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
+import org.workshop.dependencyinjection.dagger.DaggerApplicationComponent
+import org.workshop.dependencyinjection.dagger.MonsterModule
 import org.workshop.dependencyinjection.model.Monster
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Provider
 import kotlin.random.Random
 
 class MainViewModel: ViewModel() {
@@ -33,23 +38,31 @@ class MainViewModel: ViewModel() {
         get() = _currentJobLiveData
     val isPlaying get() = currentJobLiveData.value != null
 
+    // Dependency Injection
+    @Inject
+    @Named(MonsterModule.MONSTER_PIKACHU)
+    lateinit var monster1Provider: Provider<Monster>
+
+    @Inject
+    @Named(MonsterModule.MONSTER_LIZARDON)
+    lateinit var monster2Provider: Provider<Monster>
+
+    init {
+        PokemonApplication.appComponent.inject(this)
+    }
+
     fun startGame() {
         clearData()
 
         // Background Thread
         _currentJobLiveData.postValue(
             viewModelScope.launch(Dispatchers.IO) {
-                // Create Weapon and Armor for each monsters.
-//                val weapon1 = Weapon()
-//                val armor1 = Armor()
-//                val monster1 = Monster("Pikachu", 200.0, 50.0, 2000.0, weapon1, armor1)
-                val monster1 = Monster("Pikachu", 200.0, 50.0, 2000.0)
+                // Inject monster 1
+                val monster1 = monster1Provider.get()
                 _monster1LiveData.postValue(monster1)
 
-//                val weapon2 = Weapon()
-//                val armor2 = Armor()
-//                val monster2 = Monster("Lizardon", 100.0, 100.0, 2000.0, weapon2, armor2)
-                val monster2 = Monster("Lizardon", 100.0, 100.0, 2000.0)
+                // Inject monster 2
+                val monster2 = monster2Provider.get()
                 _monster2LiveData.postValue(monster2)
 
                 var isPlayer1Turn = true

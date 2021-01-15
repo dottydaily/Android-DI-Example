@@ -6,18 +6,13 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 class Monster (
-        val name: String,
-        val baseAtk: Double,
-        val baseDef: Double,
-        var hp: Double
+    val name: String,
+    val baseAtk: Double,
+    val baseDef: Double,
+    var hp: Double,
+    val weapon: Weapon,
+    val armor: Armor
 ) {
-    @Inject lateinit var weapon: Weapon
-    @Inject lateinit var armor: Armor
-
-    init {
-        PokemonApplication.appComponent.inject(this)
-    }
-
     val totalAtk get() = baseAtk + weapon.atk
     val totalDef get() = baseDef + armor.def
     val isDead get() = state == MonsterState.DEAD
