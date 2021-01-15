@@ -18,11 +18,9 @@ class MainViewModel: ViewModel() {
     // LiveData
     private val _monster1LiveData = MutableLiveData<Monster>().apply { value = null }
     val monster1LiveData: LiveData<Monster> get() = _monster1LiveData
-    fun updateMonster1() { _monster1LiveData.postValue(_monster1LiveData.value) }
 
     private val _monster2LiveData = MutableLiveData<Monster>().apply { value = null }
     val monster2LiveData: LiveData<Monster> get() = _monster2LiveData
-    fun updateMonster2() { _monster2LiveData.postValue(_monster2LiveData.value) }
 
     private val _gameTurnLiveData = MutableLiveData<String>().apply { value = null }
     val gameTurnLiveData: LiveData<String> get() = _gameTurnLiveData
