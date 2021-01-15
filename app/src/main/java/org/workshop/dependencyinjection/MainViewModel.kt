@@ -86,7 +86,7 @@ class MainViewModel: ViewModel() {
                         _gameDescriptionLiveData.postValue("${monster2.name}'s " +
                                 (if (willAttack) "attacking" else "guarding") + " the opponent.")
                     }
-                    delay(2000L)
+                    delay(1000L)
 
                     // Do the action and update the monster's detail.
                     var description: String? = null
@@ -118,6 +118,9 @@ class MainViewModel: ViewModel() {
                         this.cancel()
                     }
                 }
+
+                val winner = if (monster1.isDead) { monster1.name } else { monster2.name }
+                _gameTurnLiveData.postValue("$winner wins!")
 
                 stopGame()
             }

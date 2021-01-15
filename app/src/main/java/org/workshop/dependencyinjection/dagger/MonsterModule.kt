@@ -14,9 +14,15 @@ class MonsterModule {
     companion object {
         const val MONSTER_PIKACHU = "MONSTER_PIKACHU"
         const val MONSTER_LIZARDON = "MONSTER_LIZARDON"
+        const val RANDOM_WEAPON = "RANDOM_WEAPON"
+        const val RANDOM_ARMOR = "RANDOM_ARMOR"
     }
 
+    // @Provides tell Dagger how to create instances of the type that this function
+    // returns (i.e. Weapon).
+    // Function parameters are the dependencies of this type.
     @Provides
+    @Named(RANDOM_WEAPON)
     fun provideWeapon(): Weapon {
         return Weapon(Random.nextDouble(500.0, 1000.0),
             when (Random.nextInt(1, 6)) {
@@ -31,6 +37,7 @@ class MonsterModule {
     }
 
     @Provides
+    @Named(RANDOM_ARMOR)
     fun provideArmor(): Armor {
         return Armor(
             Random.nextDouble(1.0, 100.0),
@@ -47,13 +54,19 @@ class MonsterModule {
 
     @Provides
     @Named(MONSTER_PIKACHU)
-    fun provideMonsterPikachu(weapon: Weapon, armor: Armor): Monster {
+    fun provideMonsterPikachu(
+        @Named(RANDOM_WEAPON) weapon: Weapon,
+        @Named(RANDOM_ARMOR) armor: Armor
+    ): Monster {
         return Monster("Pikachu", 200.0, 50.0, 2000.0, weapon, armor)
     }
 
     @Provides
     @Named(MONSTER_LIZARDON)
-    fun provideMonsterLizardon(weapon: Weapon, armor: Armor): Monster {
+    fun provideMonsterLizardon(
+        @Named(RANDOM_WEAPON) weapon: Weapon,
+        @Named(RANDOM_ARMOR) armor: Armor
+    ): Monster {
         return Monster("Lizardon", 100.0, 100.0, 2000.0, weapon, armor)
     }
 }
