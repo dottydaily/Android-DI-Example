@@ -5,22 +5,39 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.LiveData
+import org.workshop.dependencyinjection.dagger.DaggerApplicationComponent
+import org.workshop.dependencyinjection.dagger.GameStatComponent
 import org.workshop.dependencyinjection.databinding.ActivityMainBinding
 import org.workshop.dependencyinjection.databinding.MonsterLayoutBinding
+import org.workshop.dependencyinjection.model.GameStat
 import org.workshop.dependencyinjection.model.Monster
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     // ViewBinding
     private lateinit var binding: ActivityMainBinding
 
+    // GameStatComponent
+    private lateinit var gameStatComponent: GameStatComponent
+
     // ViewModel
-    private val viewModel by viewModels<MainViewModel>()
+    @Inject lateinit var viewModel: MainViewModel
+
+    // GameStat
+    @Inject lateinit var gameStat: GameStat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Inject all object into this activity, by using sub-component instead.
+        gameStatComponent = PokemonApplication.appComponent.gameStatComponent().create()
+
+        if (this::gameStatComponent.isInitialized) {
+            gameStatComponent.inject(this)
+        }
 
         handleStartButton()
         observeTurnLiveData()
@@ -38,9 +55,9 @@ class MainActivity : AppCompatActivity() {
     private fun handleStartButton() {
         binding.startButton.setOnClickListener {
             if (!viewModel.isPlaying) {
-                viewModel.startGame()
+                viewModel.startGame(gameStat)
             } else {
-                viewModel.stopGame()
+                viewModel.stopGame(gameStat)
             }
         }
         viewModel.currentJobLiveData.observe(this) { job ->

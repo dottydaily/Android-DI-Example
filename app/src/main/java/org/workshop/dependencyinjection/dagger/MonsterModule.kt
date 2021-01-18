@@ -58,7 +58,8 @@ class MonsterModule {
         @Named(RANDOM_WEAPON) weapon: Weapon,
         @Named(RANDOM_ARMOR) armor: Armor
     ): Monster {
-        return Monster("Pikachu", 200.0, 50.0, 2000.0, weapon, armor)
+        val randomHp = Random.nextInt(1200, 1500).toDouble()
+        return Monster("Pikachu", 200.0, 50.0, randomHp, weapon, armor)
     }
 
     @Provides
@@ -67,6 +68,7 @@ class MonsterModule {
         @Named(RANDOM_WEAPON) weapon: Weapon,
         @Named(RANDOM_ARMOR) armor: Armor
     ): Monster {
-        return Monster("Lizardon", 100.0, 100.0, 2000.0, weapon, armor)
+        val randomHp = Random.nextInt(1200, 1500).toDouble()
+        return Monster("Lizardon", 100.0, 100.0, randomHp, weapon, armor)
     }
 }

@@ -1,19 +1,27 @@
 package org.workshop.dependencyinjection
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
-import org.workshop.dependencyinjection.dagger.DaggerApplicationComponent
 import org.workshop.dependencyinjection.dagger.MonsterModule
+import org.workshop.dependencyinjection.model.GameStat
 import org.workshop.dependencyinjection.model.Monster
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
+import javax.inject.Singleton
 import kotlin.random.Random
 
-class MainViewModel: ViewModel() {
+@Singleton
+class MainViewModel @Inject constructor(): ViewModel() {
+
+    init {
+        Log.d("DependencyInjection", "ViewModel has been created at ${Date()}")
+    }
 
     // LiveData
     private val _monster1LiveData = MutableLiveData<Monster>().apply { value = null }
@@ -49,7 +57,7 @@ class MainViewModel: ViewModel() {
         PokemonApplication.appComponent.inject(this)
     }
 
-    fun startGame() {
+    fun startGame(gameStat: GameStat) {
         clearData()
 
         // Background Thread
@@ -70,7 +78,8 @@ class MainViewModel: ViewModel() {
                         monster1.state != Monster.MonsterState.DEAD &&
                         monster2.state != Monster.MonsterState.DEAD) {
                     // Update turn's number and player's turn, then set delay to 2 second.
-                    _gameTurnLiveData.postValue("Turn ${turn.toInt()}")
+                    val turnNumber = turn.toInt()
+                    _gameTurnLiveData.postValue("Turn $turnNumber")
                     _gamePlayerLiveData.postValue(
                         if (isPlayer1Turn) "${monster1.name}'s turn."
                         else "${monster2.name}'s turn."
@@ -89,23 +98,38 @@ class MainViewModel: ViewModel() {
                     delay(1000L)
 
                     // Do the action and update the monster's detail.
+                    val actionType = if (willAttack) GameStat.MonsterActionType.ATTACK
+                                        else GameStat.MonsterActionType.DEFEND
+
+                    // Create MonsterAction to save the action data into GameStat's object.
+                    var monsterAction: GameStat.MonsterAction? = null
+
                     var description: String? = null
                     if (isPlayer1Turn) {
-                        if (willAttack) {
+                        if (actionType == GameStat.MonsterActionType.ATTACK) {
                             description = monster1.attack(monster2)
-                            monster1.state = Monster.MonsterState.NORMAL
                         } else {
-                            monster1.state = Monster.MonsterState.GUARD
+                            monster1.defend()
                         }
+
+                        monsterAction = GameStat.MonsterAction(turnNumber, monster1, actionType)
                     } else {
-                        if (willAttack) {
+                        if (actionType == GameStat.MonsterActionType.ATTACK) {
                             description = monster2.attack(monster1)
-                            monster2.state = Monster.MonsterState.NORMAL
                         } else {
-                            monster2.state = Monster.MonsterState.GUARD
+                            monster2.defend()
                         }
+
+                        monsterAction = GameStat.MonsterAction(turnNumber, monster2, actionType)
                     }
+
+                    // Update MonsterAction to GameStat's object.
+                    gameStat.addMonsterAction(monsterAction)
+
+                    // Update description.
                     description?.let { _gameDescriptionLiveData.postValue(it) }
+
+                    // Update each monsters' detail.
                     _monster1LiveData.postValue(monster1)
                     _monster2LiveData.postValue(monster2)
                     delay(3000L)
@@ -119,15 +143,17 @@ class MainViewModel: ViewModel() {
                     }
                 }
 
-                val winner = if (monster1.isDead) { monster1.name } else { monster2.name }
+                val winner = if (monster1.isDead) { monster2.name } else { monster1.name }
                 _gameTurnLiveData.postValue("$winner wins!")
 
-                stopGame()
+                stopGame(gameStat)
             }
         )
     }
 
-    fun stopGame() {
+    fun stopGame(gameStat: GameStat) {
+        Log.d("DependencyInjection", gameStat.toString())
+        gameStat.reset()
         _currentJobLiveData.value?.cancel()
         _currentJobLiveData.postValue(null)
     }
