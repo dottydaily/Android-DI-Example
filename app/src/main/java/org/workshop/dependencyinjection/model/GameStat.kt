@@ -3,8 +3,10 @@ package org.workshop.dependencyinjection.model
 import android.util.Log
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.collections.ArrayList
 
+@Singleton
 class GameStat @Inject constructor() {
 
     init {
@@ -29,6 +31,11 @@ class GameStat @Inject constructor() {
     }
 
     private val actionList: ArrayList<MonsterAction> = arrayListOf()
+    var player1WinCount = 0; private set
+    fun increasePlayer1WinCount() { player1WinCount++ }
+    var player2WinCount = 0; private set
+    fun increasePlayer2WinCount() { player2WinCount++ }
+
 
     fun addMonsterAction(monsterAction: MonsterAction) {
         actionList.add(monsterAction)

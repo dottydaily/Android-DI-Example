@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         observeTurnLiveData()
         observePlayerTurnLiveData()
         observeDescriptionLiveData()
+        observePlayerWinCountLiveData()
 
         observeMonsterDetailLiveData(viewModel.monster1LiveData, binding.monster1Layout)
         observeMonsterDetailLiveData(viewModel.monster2LiveData, binding.monster2Layout)
@@ -92,6 +93,19 @@ class MainActivity : AppCompatActivity() {
     private fun observeDescriptionLiveData() {
         viewModel.gameDescriptionLiveData.observe(this) {
             binding.gameDescriptionTextView.text = it
+        }
+    }
+
+    private fun observePlayerWinCountLiveData() {
+        // update for the first time
+        viewModel.updateWinCount(gameStat)
+
+        viewModel.player1WinCountLiveData.observe(this) {
+            it?.let { binding.player1WinCountTextView.text = it.toString() }
+        }
+
+        viewModel.player2WinCountLiveData.observe(this) {
+            it?.let { binding.player2WinCountTextView.text = it.toString() }
         }
     }
 

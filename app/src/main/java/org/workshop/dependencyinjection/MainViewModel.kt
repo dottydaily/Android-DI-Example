@@ -16,7 +16,6 @@ import javax.inject.Provider
 import javax.inject.Singleton
 import kotlin.random.Random
 
-@Singleton
 class MainViewModel @Inject constructor(): ViewModel() {
 
     init {
@@ -38,6 +37,12 @@ class MainViewModel @Inject constructor(): ViewModel() {
 
     private val _gameDescriptionLiveData = MutableLiveData<String>().apply { value = null }
     val gameDescriptionLiveData: LiveData<String> get() = _gameDescriptionLiveData
+
+    private val _player1WinCountLiveData = MutableLiveData<Int>().apply { value = null }
+    val player1WinCountLiveData: LiveData<Int> get() = _player1WinCountLiveData
+
+    private val _player2WinCountLiveData = MutableLiveData<Int>().apply { value = null }
+    val player2WinCountLiveData: LiveData<Int> get() = _player2WinCountLiveData
 
     private val _currentJobLiveData = MutableLiveData<Job>().apply { value = null }
     val currentJobLiveData: LiveData<Job>
@@ -143,7 +148,13 @@ class MainViewModel @Inject constructor(): ViewModel() {
                     }
                 }
 
-                val winner = if (monster1.isDead) { monster2.name } else { monster1.name }
+                val winner = if (monster1.isDead) {
+                    gameStat.increasePlayer2WinCount()
+                    monster2.name
+                } else {
+                    gameStat.increasePlayer1WinCount()
+                    monster1.name
+                }
                 _gameTurnLiveData.postValue("$winner wins!")
 
                 stopGame(gameStat)
@@ -153,6 +164,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
 
     fun stopGame(gameStat: GameStat) {
         Log.d("DependencyInjection", gameStat.toString())
+        updateWinCount(gameStat)
         gameStat.reset()
         _currentJobLiveData.value?.cancel()
         _currentJobLiveData.postValue(null)
@@ -164,5 +176,11 @@ class MainViewModel @Inject constructor(): ViewModel() {
         _gameTurnLiveData.postValue(null)
         _gamePlayerLiveData.postValue(null)
         _gameDescriptionLiveData.postValue(null)
+    }
+
+    fun updateWinCount(gameStat: GameStat) {
+        // Update each players' win count.
+        _player1WinCountLiveData.postValue(gameStat.player1WinCount)
+        _player2WinCountLiveData.postValue(gameStat.player2WinCount)
     }
 }
