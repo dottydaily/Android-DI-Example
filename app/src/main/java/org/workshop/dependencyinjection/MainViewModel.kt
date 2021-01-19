@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.*
-import org.workshop.dependencyinjection.dagger.MonsterModule
+import org.workshop.dependencyinjection.hilt.MonsterLizardon
+import org.workshop.dependencyinjection.hilt.MonsterPikachu
 import org.workshop.dependencyinjection.model.GameStat
 import org.workshop.dependencyinjection.model.Monster
 import java.util.*
@@ -16,6 +18,7 @@ import javax.inject.Provider
 import javax.inject.Singleton
 import kotlin.random.Random
 
+@ActivityScoped
 class MainViewModel @Inject constructor(): ViewModel() {
 
     init {
@@ -50,17 +53,13 @@ class MainViewModel @Inject constructor(): ViewModel() {
     val isPlaying get() = currentJobLiveData.value != null
 
     // Dependency Injection
+    @MonsterPikachu
     @Inject
-    @Named(MonsterModule.MONSTER_PIKACHU)
     lateinit var monster1Provider: Provider<Monster>
 
+    @MonsterLizardon
     @Inject
-    @Named(MonsterModule.MONSTER_LIZARDON)
     lateinit var monster2Provider: Provider<Monster>
-
-    init {
-        PokemonApplication.appComponent.inject(this)
-    }
 
     fun startGame(gameStat: GameStat) {
         clearData()

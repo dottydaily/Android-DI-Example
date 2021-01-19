@@ -3,23 +3,19 @@ package org.workshop.dependencyinjection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.activity.viewModels
 import androidx.lifecycle.LiveData
-import org.workshop.dependencyinjection.dagger.DaggerApplicationComponent
-import org.workshop.dependencyinjection.dagger.GameStatComponent
+import dagger.hilt.android.AndroidEntryPoint
 import org.workshop.dependencyinjection.databinding.ActivityMainBinding
 import org.workshop.dependencyinjection.databinding.MonsterLayoutBinding
 import org.workshop.dependencyinjection.model.GameStat
 import org.workshop.dependencyinjection.model.Monster
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     // ViewBinding
     private lateinit var binding: ActivityMainBinding
-
-    // GameStatComponent
-    private lateinit var gameStatComponent: GameStatComponent
 
     // ViewModel
     @Inject lateinit var viewModel: MainViewModel
@@ -31,13 +27,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Inject all object into this activity, by using sub-component instead.
-        gameStatComponent = PokemonApplication.appComponent.gameStatComponent().create()
-
-        if (this::gameStatComponent.isInitialized) {
-            gameStatComponent.inject(this)
-        }
 
         handleStartButton()
         observeTurnLiveData()
