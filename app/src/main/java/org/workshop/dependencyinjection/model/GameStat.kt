@@ -44,6 +44,7 @@ class GameStat @Inject constructor() {
 
     fun reset() {
         Log.d("DependencyInjection", "GameStat has been reset.")
+        currentWinner = null
         actionList.clear()
     }
 

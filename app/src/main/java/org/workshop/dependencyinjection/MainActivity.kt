@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleStartButton() {
         binding.startButton.setOnClickListener {
             if (!viewModel.isPlaying) {
-                viewModel.startGame(gameStat)
+                viewModel.startGame(this, gameStat)
             } else {
                 viewModel.cancelGame()
             }

@@ -1,6 +1,11 @@
 package org.workshop.dependencyinjection
 
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -51,6 +56,9 @@ class MainViewModel @Inject constructor(): ViewModel() {
     val isPlaying get() = currentJobLiveData.value != null
     private var currentGame: Job? = null
 
+    // Notification Id - for create, cancel
+    private val notificationId = 101
+
     // Dependency Injection
     @MonsterPikachu
     @Inject
@@ -60,8 +68,12 @@ class MainViewModel @Inject constructor(): ViewModel() {
     @Inject
     lateinit var monster2Provider: Provider<Monster>
 
-    fun startGame(gameStat: GameStat) {
+    fun startGame(context: Context, gameStat: GameStat) {
         clearData()
+
+        NotificationManagerCompat.from(context).run {
+            cancel(notificationId)
+        }
 
         // Background Thread
         _currentJobLiveData.postValue(
@@ -76,6 +88,15 @@ class MainViewModel @Inject constructor(): ViewModel() {
                 } else {
                     Log.d("DependencyInjection", "Game has been cancelled.")
                     _gameTurnLiveData.postValue("Game has been cancelled.")
+                }
+
+                // Create Notification
+                val builder = NotificationUtils.createNotificationBuilder(
+                    context, NotificationUtils.CHANNEL_ID, "Pokemon Tournament",
+                    if (winner != null) "$winner has win the game!!" else "Game has been cancelled."
+                )
+                NotificationManagerCompat.from(context).run {
+                    notify(notificationId, builder.build())
                 }
 
                 finalizeGameResult(gameStat)
@@ -161,11 +182,11 @@ class MainViewModel @Inject constructor(): ViewModel() {
             _gameDescriptionLiveData.postValue("")
             if (monster1.isDead || monster2.isDead) {
                 gameStat.currentWinner = if (monster1.isDead) {
-                    gameStat.increasePlayer1WinCount()
-                    monster1
-                } else {
                     gameStat.increasePlayer2WinCount()
                     monster2
+                } else {
+                    gameStat.increasePlayer1WinCount()
+                    monster1
                 }
                 this.cancel()
             }
