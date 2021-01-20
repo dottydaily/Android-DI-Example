@@ -36,6 +36,7 @@ class GameStat @Inject constructor() {
     var player2WinCount = 0; private set
     fun increasePlayer2WinCount() { player2WinCount++ }
 
+    var currentWinner: Monster? = null
 
     fun addMonsterAction(monsterAction: MonsterAction) {
         actionList.add(monsterAction)
