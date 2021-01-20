@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             if (!viewModel.isPlaying) {
                 viewModel.startGame(gameStat)
             } else {
-                viewModel.stopGame(gameStat)
+                viewModel.cancelGame()
             }
         }
         viewModel.currentJobLiveData.observe(this) { job ->
