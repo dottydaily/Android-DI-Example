@@ -1,11 +1,9 @@
 package org.workshop.dependencyinjection
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +14,8 @@ import org.workshop.dependencyinjection.hilt.MonsterLizardon
 import org.workshop.dependencyinjection.hilt.MonsterPikachu
 import org.workshop.dependencyinjection.model.GameStat
 import org.workshop.dependencyinjection.model.Monster
+import org.workshop.dependencyinjection.notification.NotificationBroadcastReceiver
+import org.workshop.dependencyinjection.notification.NotificationUtils
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Provider
@@ -57,7 +57,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
     private var currentGame: Job? = null
 
     // Notification Id - for create, cancel
-    private val notificationId = 101
+    private val notificationId = NotificationBroadcastReceiver.NOTIFICATION_ID
 
     // Dependency Injection
     @MonsterPikachu
@@ -91,10 +91,11 @@ class MainViewModel @Inject constructor(): ViewModel() {
                 }
 
                 // Create Notification
+                val actionIntent = Intent(context, NotificationBroadcastReceiver::class.java)
+                val message = if (winner != null) "$winner has win the game!!" else "Game has been cancelled."
                 val builder = NotificationUtils.createNotificationBuilder(
-                    context, NotificationUtils.CHANNEL_ID, "Pokemon Tournament",
-                    if (winner != null) "$winner has win the game!!" else "Game has been cancelled."
-                )
+                        context, NotificationUtils.CHANNEL_ID,
+                        "Pokemon Tournament", message, actionIntent)
                 NotificationManagerCompat.from(context).run {
                     notify(notificationId, builder.build())
                 }

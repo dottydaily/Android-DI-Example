@@ -1,4 +1,4 @@
-package org.workshop.dependencyinjection
+package org.workshop.dependencyinjection.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,8 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import org.workshop.dependencyinjection.MainActivity
+import org.workshop.dependencyinjection.R
 
 object NotificationUtils {
     const val CHANNEL_ID = "GAME_NOTIFICATION_CHANNEL_ID"
@@ -16,7 +17,8 @@ object NotificationUtils {
         context: Context,
         channelId: String,
         title: String,
-        content: String
+        content: String,
+        actionIntent: Intent? = null,
     ): NotificationCompat.Builder {
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent: PendingIntent? = TaskStackBuilder.create(context).run {
@@ -32,6 +34,12 @@ object NotificationUtils {
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
+        if (actionIntent != null) {
+            val actionPendingIntent: PendingIntent = PendingIntent.getBroadcast(
+                    context, 0, actionIntent, 0)
+            builder.addAction(R.drawable.ic_joystick, "Start new game", actionPendingIntent)
+        }
+
         return builder
     }
 
@@ -40,12 +48,12 @@ object NotificationUtils {
         channelId: String,
         title: String,
         content: String,
-        multiLineContent: String
+        multiLineContent: String,
+        actionIntent: Intent? = null,
     ): NotificationCompat.Builder {
-        val builder = createNotificationBuilder(context, title, content, channelId)
-            .setStyle(
-                NotificationCompat.BigTextStyle().bigText(multiLineContent)
-            )
+        val builder = createNotificationBuilder(
+                context, channelId, title, content, actionIntent)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(multiLineContent))
 
         return builder
     }
