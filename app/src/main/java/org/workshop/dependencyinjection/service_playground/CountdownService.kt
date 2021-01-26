@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Binder
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -12,6 +13,10 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
 
 class CountdownService : Service() {
+    companion object {
+        const val START_COUNTDOWN_IMMEDIATELY = "START_COUNTDOWN_IMMEDIATELY"
+    }
+
     // Class used for the client Binder.
     inner class CountdownBinder: Binder() {
         fun getService(): CountdownService = this@CountdownService
@@ -28,6 +33,9 @@ class CountdownService : Service() {
     private val _numberLiveData = MutableLiveData<Int>().apply { value = null }
     val numberLiveData: LiveData<Int> get() = _numberLiveData
 
+    // This service startId
+    var thisServiceStartId: Int? = null
+
     val serviceScope = CoroutineScope(Dispatchers.IO)
 
     // The service is being created
@@ -39,6 +47,14 @@ class CountdownService : Service() {
     // The service is starting, due to a call to startService()
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Toast.makeText(this, "Start CountdownService", Toast.LENGTH_SHORT).show()
+        thisServiceStartId = startId
+
+        intent?.let {
+            val neededToStartCountdown = it.getBooleanExtra(START_COUNTDOWN_IMMEDIATELY, false)
+            if (neededToStartCountdown) {
+                startCountdown()
+            }
+        }
 
         return START_NOT_STICKY
     }
@@ -62,6 +78,10 @@ class CountdownService : Service() {
     // The service is no longer used and is being destroyed
     override fun onDestroy() {
         super.onDestroy()
+        stopSelf()
+        if (serviceScope.isActive) {
+            serviceScope.cancel()
+        }
         Log.d("DependencyInjection", "onDestroy() of CountdownService's object")
     }
 
@@ -81,9 +101,9 @@ class CountdownService : Service() {
 
             // This must be done when this service is Started service.
             // to ensure that this service will be stop.
-            // We don't do this when using this service as Bound service.
+            // We don't do this when only using this service as Bound service.
             // Because the Bound service will stop itself when lifetime of its app component has end.
-//            stopSelf(startId)
+            thisServiceStartId?.let { stopSelf(it) }
         }
     }
 }

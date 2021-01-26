@@ -17,15 +17,21 @@ class WelcomeActivity : AppCompatActivity() {
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.gotoGameActivity.setOnClickListener {
+        binding.gotoGameActivityButton.setOnClickListener {
             startNewPage(MainActivity::class.java)
         }
 
-        binding.gotoServicePlayground.setOnClickListener {
-//            val intent = Intent(this, CountdownService::class.java)
-//            startService(intent)
+        binding.runStartedServiceButton.setOnClickListener {
+            val intent = Intent(this, CountdownService::class.java).apply {
+                putExtra(CountdownService.START_COUNTDOWN_IMMEDIATELY, true)
+            }
+            startService(intent)
+        }
+
+        binding.gotoServicePlaygroundButton.setOnClickListener {
             startNewPage(ServicePlaygroundActivity::class.java)
         }
+
     }
 
     fun startNewPage(activityClass: Class<*>) {
