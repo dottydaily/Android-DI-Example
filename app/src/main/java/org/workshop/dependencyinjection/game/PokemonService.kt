@@ -1,14 +1,15 @@
-package org.workshop.dependencyinjection
+package org.workshop.dependencyinjection.game
 
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
+import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.workshop.dependencyinjection.hilt.MonsterLizardon
 import org.workshop.dependencyinjection.hilt.MonsterPikachu
@@ -21,11 +22,25 @@ import javax.inject.Inject
 import javax.inject.Provider
 import kotlin.random.Random
 
-@ActivityScoped
-class MainViewModel @Inject constructor(): ViewModel() {
+@AndroidEntryPoint
+class PokemonService: Service() {
+    // Class used for the client Binder.
+    inner class PokemonBinder: Binder() {
+        fun getService(): PokemonService = this@PokemonService
+    }
+
+    // Binder
+    private val binder = PokemonBinder()
+
+    // CoroutineScope
+    private val serviceScope = CoroutineScope(Dispatchers.IO)
+
+    override fun onBind(p0: Intent?): IBinder? {
+        return binder
+    }
 
     init {
-        Log.d("DependencyInjection", "ViewModel has been created at ${Date()}")
+        Log.d("DependencyInjection", "PokemonService has been created at ${Date()}")
     }
 
     // LiveData
@@ -77,7 +92,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
 
         // Background Thread
         _currentJobLiveData.postValue(
-            viewModelScope.launch(Dispatchers.IO) {
+            serviceScope.launch(Dispatchers.IO) {
                 currentGame = createGame(gameStat)
                 currentGame?.join()
 
@@ -94,8 +109,8 @@ class MainViewModel @Inject constructor(): ViewModel() {
                 val actionIntent = Intent(context, NotificationBroadcastReceiver::class.java)
                 val message = if (winner != null) "$winner has win the game!!" else "Game has been cancelled."
                 val builder = NotificationUtils.createNotificationBuilder(
-                        context, NotificationUtils.CHANNEL_ID,
-                        "Pokemon Tournament", message, actionIntent)
+                    context, NotificationUtils.CHANNEL_ID,
+                    "Pokemon Tournament", message, actionIntent)
                 NotificationManagerCompat.from(context).run {
                     notify(notificationId, builder.build())
                 }
@@ -105,7 +120,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
         )
     }
 
-    fun createGame(gameStat: GameStat) = viewModelScope.launch(Dispatchers.IO) {
+    fun createGame(gameStat: GameStat) = serviceScope.launch(Dispatchers.IO) {
         // Inject monster 1
         val monster1 = monster1Provider.get()
         _monster1LiveData.postValue(monster1)

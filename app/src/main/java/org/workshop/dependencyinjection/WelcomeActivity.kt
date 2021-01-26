@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import org.workshop.dependencyinjection.databinding.ActivityWelcomeBinding
+import org.workshop.dependencyinjection.game.MainActivity
 import org.workshop.dependencyinjection.service_playground.CountdownService
 import org.workshop.dependencyinjection.service_playground.ServicePlaygroundActivity
 

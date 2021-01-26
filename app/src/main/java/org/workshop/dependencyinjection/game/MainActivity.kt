@@ -1,7 +1,12 @@
-package org.workshop.dependencyinjection
+package org.workshop.dependencyinjection.game
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.view.View
 import androidx.lifecycle.LiveData
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,39 +23,76 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     // ViewModel
-    @Inject lateinit var viewModel: MainViewModel
+//    @Inject lateinit var viewModel: MainViewModel
 
     // GameStat
     @Inject lateinit var gameStat: GameStat
+
+    // Bound Service - each element
+    private lateinit var pokemonService: PokemonService
+    private var isBound = false
+    private val connection = object: ServiceConnection {
+        override fun onServiceConnected(className: ComponentName?, service: IBinder?) {
+            val binder = service as PokemonService.PokemonBinder
+            pokemonService = binder.getService()
+            isBound = true
+
+            handleStartButton()
+            observeTurnLiveData()
+            observePlayerTurnLiveData()
+            observeDescriptionLiveData()
+            observePlayerWinCountLiveData()
+            observeMonsterDetailLiveData(pokemonService.monster1LiveData, binding.monster1Layout)
+            observeMonsterDetailLiveData(pokemonService.monster2LiveData, binding.monster2Layout)
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            isBound = false
+
+            pokemonService.run {
+                pokemonService.currentJobLiveData.removeObservers(this@MainActivity)
+                gameTurnLiveData.removeObservers(this@MainActivity)
+                gamePlayerLiveData.removeObservers(this@MainActivity)
+                gameDescriptionLiveData.removeObservers(this@MainActivity)
+                player1WinCountLiveData.removeObservers(this@MainActivity)
+                player2WinCountLiveData.removeObservers(this@MainActivity)
+                monster1LiveData.removeObservers(this@MainActivity)
+                monster2LiveData.removeObservers(this@MainActivity)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        handleStartButton()
-        observeTurnLiveData()
-        observePlayerTurnLiveData()
-        observeDescriptionLiveData()
-        observePlayerWinCountLiveData()
-
-        observeMonsterDetailLiveData(viewModel.monster1LiveData, binding.monster1Layout)
-        observeMonsterDetailLiveData(viewModel.monster2LiveData, binding.monster2Layout)
+        registerPokemonService()
     }
 
     ///////////////////
     // Helper method //
     ///////////////////
 
+    private fun registerPokemonService() {
+        // Bind to CountdownService
+        Intent(this, PokemonService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
     private fun handleStartButton() {
         binding.startButton.setOnClickListener {
-            if (!viewModel.isPlaying) {
-                viewModel.startGame(this, gameStat)
-            } else {
-                viewModel.cancelGame()
+            if (isBound) {
+                if (!pokemonService.isPlaying) {
+                    pokemonService.startGame(this, gameStat)
+                } else {
+                    pokemonService.cancelGame()
+                }
             }
         }
-        viewModel.currentJobLiveData.observe(this) { job ->
+
+        pokemonService.currentJobLiveData.observe(this) { job ->
             if (job == null) {
                 binding.apply {
                     gameDescriptionTextView.visibility = View.INVISIBLE
@@ -68,32 +110,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeTurnLiveData() {
-        viewModel.gameTurnLiveData.observe(this) {
+        pokemonService.gameTurnLiveData.observe(this) {
             binding.turnTextView.text = it
         }
     }
 
     private fun observePlayerTurnLiveData() {
-        viewModel.gamePlayerLiveData.observe(this) {
+        pokemonService.gamePlayerLiveData.observe(this) {
             binding.nowPlayerTextView.text = it
         }
     }
 
     private fun observeDescriptionLiveData() {
-        viewModel.gameDescriptionLiveData.observe(this) {
+        pokemonService.gameDescriptionLiveData.observe(this) {
             binding.gameDescriptionTextView.text = it
         }
     }
 
     private fun observePlayerWinCountLiveData() {
         // update for the first time
-        viewModel.updateWinCount(gameStat)
+        pokemonService.updateWinCount(gameStat)
 
-        viewModel.player1WinCountLiveData.observe(this) {
+        pokemonService.player1WinCountLiveData.observe(this) {
             it?.let { binding.player1WinCountTextView.text = it.toString() }
         }
 
-        viewModel.player2WinCountLiveData.observe(this) {
+        pokemonService.player2WinCountLiveData.observe(this) {
             it?.let { binding.player2WinCountTextView.text = it.toString() }
         }
     }

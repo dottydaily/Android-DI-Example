@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
-import org.workshop.dependencyinjection.MainActivity
+import org.workshop.dependencyinjection.game.MainActivity
 import org.workshop.dependencyinjection.R
 
 object NotificationUtils {
