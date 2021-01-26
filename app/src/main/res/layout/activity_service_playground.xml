@@ -4,44 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WelcomeActivity">
+    tools:context=".service_playground.ServicePlaygroundActivity">
 
     <TextView
-        android:id="@+id/welcome_text_view"
+        android:id="@+id/countdown_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to\n the Pokemon Tournament"
-        android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="32sp"
+        android:text="0"
         android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/goto_game_activity"/>
+        app:layout_constraintBottom_toTopOf="@id/start_button"/>
 
     <Button
-        android:id="@+id/goto_game_activity"
+        android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Go to game page"
+        android:text="Start Countdown Service"
         android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/welcome_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/goto_service_playground"/>
-
-    <Button
-        android:id="@+id/goto_service_playground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Go to service playground"
-        android:textColor="@android:color/black"
-        android:backgroundTint="@android:color/holo_orange_dark"
-        app:layout_constraintTop_toBottomOf="@id/goto_game_activity"
+        android:backgroundTint="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/countdown_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

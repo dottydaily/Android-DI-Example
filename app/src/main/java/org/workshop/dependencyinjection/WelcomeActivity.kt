@@ -1,11 +1,11 @@
 package org.workshop.dependencyinjection
 
-import android.app.PendingIntent
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.core.app.TaskStackBuilder
 import org.workshop.dependencyinjection.databinding.ActivityWelcomeBinding
+import org.workshop.dependencyinjection.service_playground.CountdownService
+import org.workshop.dependencyinjection.service_playground.ServicePlaygroundActivity
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -18,8 +18,18 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.gotoGameActivity.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            startNewPage(MainActivity::class.java)
         }
+
+        binding.gotoServicePlayground.setOnClickListener {
+//            val intent = Intent(this, CountdownService::class.java)
+//            startService(intent)
+            startNewPage(ServicePlaygroundActivity::class.java)
+        }
+    }
+
+    fun startNewPage(activityClass: Class<*>) {
+        val intent = Intent(this, activityClass)
+        startActivity(intent)
     }
 }
