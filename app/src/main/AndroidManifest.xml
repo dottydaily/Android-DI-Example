@@ -17,6 +17,11 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service
+            android:name=".game.PokemonService"
+            android:enabled="true"
+            android:exported="false"/>
+
         <activity
             android:name=".game.MainActivity"
             android:parentActivityName=".WelcomeActivity" />

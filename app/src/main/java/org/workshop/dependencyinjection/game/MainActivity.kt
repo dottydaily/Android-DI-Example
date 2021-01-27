@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             pokemonService = binder.getService()
             isBound = true
 
-            handleStartButton()
+            observeCurrentGameLiveData()
             observeTurnLiveData()
             observePlayerTurnLiveData()
             observeDescriptionLiveData()
@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        handleStartButton()
         registerPokemonService()
     }
 
@@ -77,6 +78,10 @@ class MainActivity : AppCompatActivity() {
     private fun registerPokemonService() {
         // Bind to CountdownService
         Intent(this, PokemonService::class.java).also { intent ->
+            // Start a service as the STARTED SERVICE (to make it still run even though this activity has destroyed)
+            startService(intent)
+
+            // Bind the service to this Activity
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
     }
@@ -91,7 +96,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
+    private fun observeCurrentGameLiveData() {
         pokemonService.currentJobLiveData.observe(this) { job ->
             if (job == null) {
                 binding.apply {

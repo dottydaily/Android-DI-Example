@@ -35,8 +35,24 @@ class PokemonService: Service() {
     // CoroutineScope
     private val serviceScope = CoroutineScope(Dispatchers.IO)
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("DependencyInjection", "PokemonService has been started with the MainActivity.")
+        return START_NOT_STICKY
+    }
+
     override fun onBind(p0: Intent?): IBinder? {
+        Log.d("DependencyInjection", "PokemonService has been bound to the MainActivity.")
         return binder
+    }
+
+    override fun onCreate() {
+        Log.d("DependencyInjection", "PokemonService has been created with the MainActivity.")
+        super.onCreate()
+    }
+
+    override fun onDestroy() {
+        Log.d("DependencyInjection", "PokemonService has been unbound from the MainActivity.")
+        super.onDestroy()
     }
 
     init {
@@ -218,6 +234,7 @@ class PokemonService: Service() {
         updateWinCount(gameStat)
         _currentJobLiveData.postValue(null)
         gameStat.reset()
+        stopSelf()
     }
 
     fun clearData() {

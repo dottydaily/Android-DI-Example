@@ -21,10 +21,10 @@ class GameStat @Inject constructor() {
         override fun toString(): String {
             return "Turn $turn : " + when(actionType) {
                 MonsterActionType.ATTACK -> {
-                    "${monster.name} has attacking to the opponent."
+                    "${monster.name} has attacked to the opponent."
                 }
                 MonsterActionType.DEFEND -> {
-                    "${monster.name} has defending from the opponent."
+                    "${monster.name} has defended from the opponent."
                 }
             }
         }
