@@ -1,5 +1,6 @@
 package org.workshop.dependencyinjection.notification
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,6 +14,7 @@ import org.workshop.dependencyinjection.R
 
 object NotificationUtils {
     const val CHANNEL_ID = "GAME_NOTIFICATION_CHANNEL_ID"
+    const val NOTIFICATION_ID = 112233
     fun createNotificationBuilder(
         context: Context,
         channelId: String,
@@ -56,6 +58,20 @@ object NotificationUtils {
             .setStyle(NotificationCompat.BigTextStyle().bigText(multiLineContent))
 
         return builder
+    }
+
+    fun createNotificationForegroundServiceBuilder(context: Context, pendingIntent: PendingIntent): Notification.Builder? {
+        return if (Build.VERSION.SDK_INT >= 26) {
+            Notification.Builder(
+                    context, NotificationUtils.CHANNEL_ID)
+                    .setContentTitle("Pokemon Tournament")
+                    .setContentText("Tap for see the current game activity!")
+                    .setSmallIcon(R.drawable.ic_joystick)
+                    .setContentIntent(pendingIntent)
+                    .setTicker("Ticker")
+        } else {
+            null
+        }
     }
 
     fun createNotificationChannel(context: Context) {

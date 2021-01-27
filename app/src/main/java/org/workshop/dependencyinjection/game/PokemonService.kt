@@ -1,9 +1,12 @@
 package org.workshop.dependencyinjection.game
 
+import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
@@ -89,6 +92,7 @@ class PokemonService: Service() {
 
     // Notification Id - for create, cancel
     private val notificationId = NotificationBroadcastReceiver.NOTIFICATION_ID
+    private val foregroundNotificationId = NotificationUtils.NOTIFICATION_ID
 
     // Dependency Injection
     @MonsterPikachu
@@ -147,6 +151,8 @@ class PokemonService: Service() {
 
         var isPlayer1Turn = true
         var turn = 1.0
+
+        createForegroundService()
 
         while (isActive &&
             monster1.state != Monster.MonsterState.DEAD &&
@@ -235,6 +241,7 @@ class PokemonService: Service() {
         _currentJobLiveData.postValue(null)
         gameStat.reset()
         stopSelf()
+        stopForeground(true)
     }
 
     fun clearData() {
@@ -249,5 +256,16 @@ class PokemonService: Service() {
         // Update each players' win count.
         _player1WinCountLiveData.postValue(gameStat.player1WinCount)
         _player2WinCountLiveData.postValue(gameStat.player2WinCount)
+    }
+
+    private fun createForegroundService() {
+        // Start Foreground Service Notification
+        val pendingIntent: PendingIntent = Intent(this@PokemonService,
+                MainActivity::class.java).let { notificationIntent ->
+            PendingIntent.getActivity(this@PokemonService, 0, notificationIntent, 0)
+        }
+        val builder = NotificationUtils.createNotificationForegroundServiceBuilder(
+                this@PokemonService, pendingIntent)
+        builder?.let { startForeground(foregroundNotificationId, builder.build()) }
     }
 }
